@@ -1,0 +1,460 @@
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+{% set dateid = prefix ~ "-date" %}
+{% set dataid = prefix ~ "-newdata" %}
+{% set var = prefix ~ "_newdata" %}
+
+
+<form
+	id="{{ prefix }}-form"
+	action=""
+	method="POST"
+	hidden="hidden"
+>
+	{{ fields.csrfField() }}
+	<textarea
+		id="{{ dataid }}"
+		name="{{ dataid }}"
+	></textarea>
+	<input
+		id="{{ dateid }}"
+		type="text"
+		name="{{ dateid }}"
+		value="{{ date }}"
+	/>
+</form>
+
+<script>
+	console.log("start script");
+	// data to send
+	var {{ var }} = {
+		empty: true,
+		add(k, v) {
+			console.log("registered", k, "to", v);
+			this.empty = false;
+			this[k] = v;
+		}
+	};
+	// change date
+	function {{ prefix }}_set_date(new_date) {
+		console.log("changed date from {{ date }} to", new_date);
+		new_date = (new Date(Date.parse(new_date + " UTC"))).toISOString().split('T')[0];
+		console.log("consider date", new_date);
+		if (new_date === "{{ date }}") return;
+		const msg = "{{ __('Unsaved changes will be lost, continue?') }}";
+		if (!({{ var }}.empty || confirm(msg))) return;
+		const date_input = document.getElementById("{{ dateid }}");
+		console.log("date form set");
+		date_input.value = new_date;
+		const date_form = document.getElementById("{{ prefix }}-form");
+		console.log("date form submit");
+		date_form.submit();
+	}
+	// redirect
+	function {{ prefix }}_redirect(target) {
+		const msg = "{{ __('Unsaved changes, continue?') }}";
+		if ({{ var }}.empty || confirm(msg)) {
+			window.location = target;
+		}
+	}
+	// submit
+	function {{ prefix }}_submit() {
+		
+		const form = document.getElementById("{{ prefix }}-form");
+		const input_field = document.getElementById("{{ dataid }}");
+		var guard_empty_hours = true;
+		var data = {};
+		for (const [key, value] of Object.entries({{ var }})) {
+			if (!key.startsWith("{{ prefix }}")) continue;
+			const path = key.split("-");
+			const tid = path[1 + path.indexOf("ticket")];
+			const current = data[tid] || {};
+			const ttid = path.includes("newtask") ?
+				0 :
+				path[1 + path.indexOf("task")];
+			const datum = current[ttid] || {};
+			const k = path.at(-1);
+			datum[k] = value;
+			current[ttid] = datum;
+			data[tid] = current;
+			console.log(data);
+		}
+		const msg = "{{ __('Some tasks have been changed to a duration of 0, continue?') }}";
+		if (!(guard_empty_hours || confirm(msg))) return;
+		input_field.value = JSON.stringify(data);
+		form.submit();
+	}
+	// focus on right day
+	document.addEventListener("DOMContentLoaded", _ => {
+		const target = document.getElementById("{{ prefix }}-date-{{ date }}");
+		console.log("focus on", target);
+		target.focus();
+	});
+	// regist listeners
+	document.addEventListener("DOMContentLoaded", _ => {
+		// --- date ---
+		console.log("start on loaded");
+		const date_input = document.querySelectorAll("input[id^={{ dateid }}]")[0];
+		const date_form = document.getElementById("{{ dateid }}-form");
+		date_input.addEventListener("change", e => {
+			console.log("{{ var }} = ", {{ var }});
+			console.log("changed date from {{ date }} to", e.target.value);
+			if (e.target.value === "{{ date }}") return;
+			const msg = "{{ __('Unsaved changes will be lost, continue?') }}";
+			if (!({{ var }}.empty || confirm(msg))) {
+				date_input.value = "{{ date }}";
+				return;
+			}
+			console.log("form submit");
+			date_form.submit();
+		});
+		// --- changes ---
+		Array.from(document.querySelectorAll("[id^={{ prefix }}-]"))
+		.filter(x =>
+			/-(task-\d+|newtask)-(hours|description|remove-toggle)$/.test(x.id)
+		)
+		.forEach(x =>
+			console.log("---", x.id) ||
+			x.addEventListener("change", e => {
+				console.log("e = ", e);
+				console.log("{{ var }} = ", {{ var }});
+				let id = e.target.id;
+				let value = e.target.value;
+				const toggle_postfix = "-toggle";
+				if (id.endsWith(toggle_postfix)) {
+					id = id.slice(0, -toggle_postfix.length);
+					value = e.target.checked;
+				}
+				{{ var }}.add(id, value);
+		}));
+	});
+	console.log("end script");
+</script>
+
+
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+<div class="mb-4">
+	<script>
+		document.getElementById('{{ prefix}}-tticketlink').parentElement.parentElement.hidden=true;
+		document.getElementById('{{ prefix}}-ttasklink').parentElement.parentElement.hidden=true;
+		document.getElementById('{{ prefix}}-tcontractlink').parentElement.parentElement.hidden=true;
+	</script>
+	<button
+		class="btn btn-secondary w-10"
+		onclick="{{ prefix }}_redirect('timetasks/timedticket.php')"
+	>
+		{{ __('Tickets report') }}
+	</button>
+	<button
+		class="btn btn-secondary w-10"
+		onclick="{{ prefix }}_redirect('timetasks/timetask.php')"
+	>
+		{{ __('Tasks report') }}
+	</button>
+	<button
+		class="btn btn-secondary w-10"
+		onclick="{{ prefix }}_redirect('timetasks/timingcontract.php')"
+	>
+		{{ __('Contracts report') }}
+	</button>
+</div>
+
+<div class="card mb-4">
+	<div class="card-header">
+		<div class="card-title">
+			{{ __('Day') }}: {{ date }}
+			<button
+				class="btn btn-sm btn-primary w-100"
+				onclick="{{ prefix }}_set_date((new Date).toISOString().split('T')[0])"
+			>
+				{{ __('Today') }}
+			</button>
+</div>
+	</div>
+
+	{# TODO: reduce th padding (/ margin?): style="padding-right: 0px; padding-left: 0px;" #}
+
+	<div class="table-responsive">
+		<input type="hidden" name="month" value="{{ month }}">
+		<input type="hidden" name="year" value="{{ year }}">
+		<table class="table card-table table-hover text-center">
+			<thead>
+				<tr class="align-middle">
+					<th>
+						{{ fields.dropdownArrayField(
+							'month',
+							month,
+							months,
+							__('Month'),
+							{
+								no_label: true,
+								full_width: true,
+								mb: "",
+								on_change: prefix ~ "_set_date('" ~ year ~ "-' + this.value + '-01')",
+							}
+						) }}
+					</th>
+{% for d in 1..days_in_month %}
+	{% set weekday = date(year ~ '-' ~ month ~ '-' ~ d) | date('N') %}
+	{% set is_sunday = weekday == 7 %}
+	{% set new_date = "%04d-%02d-%02d" | format(year, month, d) %}
+
+					<th
+						class="{{ new_date == date ? 'bg-primary-lt' : (is_sunday ? 'bg-red-lt' : '') }}"
+					>
+						<button
+							id="{{ prefix }}-date-{{ new_date }}"
+							type="submit"
+							name="day"
+							value="{{ d }}"
+							class="btn btn-sm {{ new_date == date ? 'btn-primary' : (is_sunday ? 'btn-outline-danger' : 'btn-outline-secondary') }} w-100"
+							onclick="{{ prefix }}_set_date('{{ new_date }}')"
+						>
+							{{ d }}
+						</button>
+					</th>
+{% endfor %}
+				</tr>
+				<tr class="align-middle">
+					<th>
+						<input
+							class="fs-4"
+							type="number"
+							value="{{ year }}"
+							size="4"
+							oninput="{{ prefix }}_set_date(this.value + '-{{ month }}-{{ day }}')"
+						>
+					</th>
+{% set weekdays = [
+	"",
+	__("Monday"),
+	__("Tuesday"),
+	__("Wednesday"),
+	__("Thursday"),
+	__("Friday"),
+	__("Saturday"),
+	__("Sunday")
+] %}
+{% for d in 1..days_in_month %}
+	{% set weekday = date(year ~ '-' ~ month ~ '-' ~ d) | date('N') %}
+	{% set is_sunday = weekday == 7 %}
+
+					<th class="{{ is_sunday ? 'bg-red-lt' : '' }}">
+						{{ weekdays[weekday] | slice(0, 3) }}
+					</th>
+{% endfor %}
+				</tr>
+			</thead>
+			<tbody>
+{% for row in recap %}
+				<tr>
+					<td align ="left">
+						{{ row.name }}
+					</td>
+	{% for s in row.seconds %}
+		{% set h = s ? s // 3600 : '-' %}
+					<td align ="center">
+						{{ h }}
+					</td>
+	{% endfor %}
+				</tr>
+{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+
+
+
+
+
+
+{% for entity in entities %}
+	{% set eid = prefix ~ "-entity-" ~ entity.id %}
+	
+<div
+	id="{{ eid }}"
+	class="card mb-3"
+>
+	<div class="card-header">
+		<a href="{{ entity.url }}"> {{ entity.full_name }} </a>
+	</div>
+
+	{% for contract in entity.contracts %}
+		{% set cid = eid ~ "-contract-" ~ contract.id %}
+		{% set hidden = contract.tickets is empty %}
+
+	<div class="card-body">
+		<div
+			class="badge bg-info rounded-pill"
+			data-bs-toggle="collapse"
+			data-bs-target="#{{ cid }}-text, #{{ cid }}-table, #{{ cid }}-show, #{{ cid }}-hide"
+		>
+			<span
+				id="{{ cid }}-show"
+				class="collapse {{ hidden ? 'show' : '' }}"
+			>
+				+
+			</span>
+			<span
+				id="{{ cid }}-hide"
+				class="collapse {{ hidden ? '' : 'show' }}"
+			>
+				-
+			</span>
+		</div>
+		<a
+			class="btn-link"
+			href="{{ contract.url }}"
+		>
+			<i class="ti ti-writing-sign"></i>
+			<em>{{ contract.name }}</em>&nbsp;
+		</a>
+			[{{ contract.hours }} h]
+		<p
+			id="{{ cid }}-text"
+			class="collapse {{ hidden ? '' : 'show' }}"
+		>
+			{{ contract.used | formatted_duration }} / {{ contract.capacity }} {{ __('hours') }}
+		</p>
+	</div>
+	<table
+		id="{{ cid }}-table"
+		class="table table-bordered collapse {{ hidden ? '' : 'show' }}"
+	>
+		<thead>
+			<tr>
+				<th>{{ __('Ticket') }}</th>
+				<th>
+					{{ __('Duration') }}
+					[<span style="text-transform: lowercase;">h</span>]
+				</th>
+				<th>{{ __('Category') }}</th>
+				<th>{{ __('Comment') }}</th>
+				<th>{{ __('User') }}</th>
+			</tr>
+		</thead>
+		<style>
+			.table-compressed td { padding-top: 0px; padding-bottom: 0px; }
+			.table-compressed input { width: 100%; padding-top: 0px; padding-bottom: 0px; }
+			.table-compressed textarea { padding-top: 0px; padding-bottom: 0px; }
+		</style>
+		<tbody class="table-compressed">
+
+		{% for ticket in contract.tickets %}
+			{% set tid = prefix ~ "-ticket-" ~ ticket.id %}
+			{% set nttid = tid ~ "-newtask" %}
+			{% set catid = nttid ~ "-cat" %}
+			{% set ttlen = ticket.tasks | length %}
+
+			<tr class="align-middle">
+				<td>{{ ticket.link | raw }}</td>
+				<td style="padding: 0px;">
+					<input
+						id="{{ nttid }}-hours"
+						name="{{ nttid }}-hours"
+						type="number"
+						value="0"
+						size="3"
+					>
+				</td>
+				<td>
+					{{ fields.dropdownField(
+						"TaskCategory",
+						catid,
+						0,
+						"",
+						{
+							no_label: true,
+							full_width: true,
+							mb: "",
+							class: 'form-select form-select-sm',
+							entity: entity.id,
+							condition: {
+								is_active: 1,
+							},
+							on_change: var ~ ".add('" ~ catid ~ "', this.value);"
+						}
+					) }}
+				</td>
+				<td style="padding: 0px;">
+					<form
+						action="javascript:{{ prefix }}_submit()"
+					>
+						<div class="row align-items-center">
+							<div class="col-sm-10">
+								<input
+									type="text"
+									id="{{ nttid }}-description"
+									name="{{ nttid }}-description"
+								/>
+							</div>
+							<div class="col-sm">
+								<button
+									type="submit"
+									class="btn btn-sm btn-warning"
+									style="--tblr-btn-padding-y: 0.5rem;"
+								>
+									<i class="ti ti-device-floppy me-1"></i>
+									{{ __('Save all') }}
+								</button>
+							</div>
+						</div>
+					</form>
+				</td>
+				<td></td>
+			</tr>
+			
+			{% for task in ticket.tasks | filter(tt => (tt.date | split(" ") | first) == date) | reverse %}
+				{% set ttid = tid ~ "-task-" ~ task.id %}
+			
+			<tr class="align-middle">
+				<td>
+					<div class="form-check form-switch mb-0 float-end">
+						<i class="ti ti-trash text-danger"></i>
+						<input
+							id="{{ ttid }}-remove-toggle"
+							class="form-check-input"
+							type="checkbox"
+							role="switch"
+						>
+						<label
+							hidden="hidden"
+							class="form-check-label"
+							for="{{ ttid }}-remove-toggle"
+						>
+							{{ __("Delete") }}
+						</label>
+					</div>
+				</td>
+				<td style="padding: 0px;">
+					<input
+						id="{{ ttid }}-hours"
+						name="{{ ttid }}-hours"
+						type="number"
+						value="{{ (task.seconds // 36) / 100 }}"
+						size="3"
+					>
+				</td>
+				<td>{{ task.cat }}</td>
+				<td>{{ task.preview | raw }}</td>
+				<td>{{ task.user }}</td>
+			</tr>
+
+			{% endfor %}
+		{% endfor %}
+			
+		</tbody>
+	</table>
+		
+	{% else %}
+		
+	<p>{{ __('no contracts') }}</p>
+		
+	{% endfor %}
+
+</div>
+
+{% endfor %}

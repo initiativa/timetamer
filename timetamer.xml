@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <name>Time Tamer</name>
+    <key>timetamer</key>
+    <state>development</state>
+    <logo></logo>
+    <description>
+        <short>
+            <en>A GLPI's plugin to manage timesheets</en>
+        </short>
+        <long>
+            <en>A GLPI's plugin to manage timesheets.</en>
+        </long>
+    </description>
+    <homepage>https://github.com/initiativa/timetamer</homepage>
+    <download>https://github.com/initiativa/timetamer/releases</download>
+    <issues>https://github.com/initiativa/timetamer/issues</issues>
+    <readme>https://github.com/initiativa/timetamer/blob/main/README.md</readme>
+    <authors>
+        <author>Pietro Lepori - initiativa s.r.l.</author>
+    </authors>
+    <versions>
+        <version>
+            <num>0.0.2</num>
+            <compatibility>~11.0</compatibility>
+            <download_url>https://github.com/initiativa/timetamer/archive/refs/tags/0.0.2.tar.gz</download_url>
+        </version>
+    </versions>
+    <langs>
+        <lang>en_GB</lang>
+    </langs>
+    <license>GPL-3.0</license>
+    <tags>
+        <en>
+            <tag>Contract</tag>
+            <tag>Ticket</tag>
+            <tag>Task</tag>
+        </en>
+    </tags>
+</root>
