@@ -212,7 +212,10 @@ final class TimeTamer extends CommonGLPI
 		$uid = (int) Session::getLoginUserID();
 		
 		// init template data with received date
-		$date = filter_input(INPUT_POST, "$key-date") ?: date('Y-m-d');
+		$date_raw = filter_input(INPUT_POST, "$key-date") ?: '';
+		$date = preg_match('/^\d{4}-\d{2}-\d{2}$/', $date_raw)?
+			$date_raw
+		:	date('Y-m-d');
 		[$year, $month, $day] = array_map(fn($s) => (int) $s, explode('-', $date));
 		$days_in_month = (int) date('t', mktime(0, 0, 0, $month, 1, $year));
 		$data += [
