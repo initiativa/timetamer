@@ -123,10 +123,7 @@ final class TimeTamer extends CommonGLPI
 		}
 		$ans = [];
 		foreach ($ids as $id) {
-			if (
-				$filter_entities
-			&&	!($filter_entities[$id] ?? false)
-			) continue;
+			if (!($filter_entities[$id] ?? false)) continue;
 			$o = new Entity();
 			$o->getFromDB($id);
 			$ans[$id] = $o;
