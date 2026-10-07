@@ -62,17 +62,6 @@ final class TimeTamer extends CommonGLPI
 	{
 		return ['management', self::class];
 	}
-
-	#[\Override]
-	function getTabNameForItem(
-		CommonGLPI $item,
-		$withtemplate = 0
-	) : string | array
-	{
-		return match ($item::class) {
-			default => 'test'
-		};
-	}
 	
 	#[\Override]
 	static function displayTabContentForItem(
