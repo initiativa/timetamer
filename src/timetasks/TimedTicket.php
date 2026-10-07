@@ -94,6 +94,8 @@ final class TimedTicket extends CommonDBTM
 	
 	static function install() : bool
 	{
+		self::uninstall();
+		
 		global $DB;
 		
 		$subtable = self::SUB_TABLE_NAME;

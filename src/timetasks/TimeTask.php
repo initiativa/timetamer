@@ -145,6 +145,8 @@ final class TimeTask extends CommonDBTM
 	
 	static function install() : bool
 	{
+		self::uninstall();
+
 		global $DB;
 		$table = self::VIEW_NAME;
 		$tt = TicketTask::getTable();

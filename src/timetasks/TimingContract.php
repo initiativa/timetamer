@@ -83,8 +83,9 @@ final class TimingContract extends CommonDBTM
 	
 	static function install() : bool
 	{
-		global $DB;
+		self::uninstall();
 		
+		global $DB;
 		
 		$table = self::VIEW_NAME;
 		$c = Contract::getTable();
