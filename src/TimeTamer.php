@@ -17,7 +17,7 @@ use Ticket;
 use User;
 use Session;
 use Dropdown;
-
+use TicketTask;
 
 final class TimeTamer extends CommonGLPI
 {
@@ -285,6 +285,7 @@ final class TimeTamer extends CommonGLPI
 
 		// populate template data
 		$user = new User();
+		$tickettask = new TicketTask();
 		$recap = [];
 		$base_recap_entry = array_fill(0, $days_in_month, 0);
 		$entities = [];
@@ -362,8 +363,8 @@ final class TimeTamer extends CommonGLPI
 							$task[$k] = $tt->fields[$k];
 						}
 						$user_id = $tt->fields["user"];
-						$task["user"] = $user->find(['id' => $user_id])[$user_id]['name'] ?? $user_id;
-						$task["cat"] = Dropdown::getDropdownName('glpi_taskcategories', $tt->fields['taskcategories_id']) ?: '-';
+						$task['user'] = $user->find(['id' => $user_id])[$user_id]['name'] ?? $user_id;
+						$task['cat'] = Dropdown::getDropdownName('glpi_taskcategories', $tt->fields['taskcategories_id']) ?: '-';
 						$lines = explode("\n", RichText::getTextFromHtml(
 							content: $tt->fields['comment'],
 							keep_presentation: false,
@@ -377,7 +378,9 @@ final class TimeTamer extends CommonGLPI
 						$task['preview'] = $prev;
 //						$task['preview'] = $tt->fields['content'];
 						
-						$tasks[] = $task;
+						if ($tickettask->can($task['id'], READ)) {
+							$tasks[] = $task;
+						}
 					}
 					$ticket['tasks'] = $tasks;
 					$ticket['tasktypename'] = \TicketTask::getTypeName(nb: count($tasks));
