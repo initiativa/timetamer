@@ -233,9 +233,6 @@ final class TimeTask extends CommonDBTM
 			:	(substr($l, 0, $limit - 3) . '...');
 			return $prev;
 		}
-		echo '<pre>';
-		var_export(['field' => $field, 'values' => $values, 'options' => $options]);
-		echo '</pre>';
 		return parent::getSpecificValueToDisplay($field, $values, $options);
 	}
 
