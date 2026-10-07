@@ -8,7 +8,7 @@ Uses:
 
 
 ## The main page: _Overview_
-![page screenshot](screenshots/overview.png?raw=true "The overview page")
+![page screenshot](assets/screenshots/overview.png?raw=true "The overview page")
 This page is available under the "Management" menu.
 
 A monthly table shows the current user's registered hours, by timing contracts.\
@@ -25,7 +25,7 @@ Each task row has a switch to delete the task and a field to change its duration
 **WARNING**: all changes must be saved via any of the "Save all" buttons.
 
 ## Report pages
-![page screenshot](screenshots/contracts_report.png?raw=true "A report page")
+![page screenshot](assets/screenshots/contracts_report.png?raw=true "A report page")
 Those pages are available from buttons at the top of any of this plugin pages.
 
 A search page for: timing contracts, timed tickets, time tasks.\
