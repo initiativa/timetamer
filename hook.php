@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use GlpiPlugin\TimeTamer\PluginDescriptor;
+use GlpiPlugin\Timetamer\PluginDescriptor;
 
 function plugin_timetamer_install() : bool
 {
