@@ -291,6 +291,15 @@ final class TimeTask extends CommonDBTM
 		
 		$tab[] = [
 			'id'		=> array_key_last($tab),
+			'table'		=> $table,
+			'field'		=> 'date',
+			'name'		=> __('Date'),
+			'datatype'	=> 'date',
+			'massiveaction'	=> true,
+		];
+		
+		$tab[] = [
+			'id'		=> array_key_last($tab),
 			'table'		=> TaskCategory::getTable(),
 			'linkfield'	=> TaskCategory::getForeignKeyField(),
 			'field'		=> 'completename',
