@@ -3,7 +3,7 @@
     <name>Time Tamer</name>
     <key>timetamer</key>
     <state>beta</state>
-    <logo></logo>
+    <logo>https://github.com/initiativa/timetamer/blob/main/assets/logo-small.png?raw=true</logo>
     <description>
         <short>
             <en>A GLPI's plugin to manage timesheets</en>
