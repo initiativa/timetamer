@@ -21,9 +21,9 @@
     </authors>
     <versions>
         <version>
-            <num>0.0.2</num>
+            <num>0.0.3</num>
             <compatibility>~11.0</compatibility>
-            <download_url>https://github.com/initiativa/timetamer/archive/refs/tags/0.0.2.tar.gz</download_url>
+            <download_url>https://github.com/initiativa/timetamer/archive/refs/tags/0.0.3.tar.gz</download_url>
         </version>
     </versions>
     <langs>

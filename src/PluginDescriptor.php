@@ -13,7 +13,7 @@ final class PluginDescriptor
 {
 	protected bool $init_done = false;
 	protected function __construct(
-		readonly SemVer $version = new SemVer(0, 0, 2),
+		readonly SemVer $version = new SemVer(0, 0, 3),
 		readonly string $key = 'timetamer',
 		readonly string $name = 'Time Tamer',
 	)
