@@ -228,8 +228,8 @@ final class TimingContract extends CommonDBTM
 			'table'		=> $table,
 			'field'		=> 'capacity',
 			'name'		=> __('Time budget'),
-			'datatype'	=> 'number',
-			'unit'		=> 'h',
+			'datatype'	=> 'decimal',
+//			'unit'		=> 'h',
 			'massiveaction'	=> true,
 		];
 		
@@ -242,8 +242,8 @@ final class TimingContract extends CommonDBTM
 						column_name: 'tot_h',
 					),
 			'name'		=> __('Time spent'),
-			'datatype'	=> 'number',
-			'unit'		=> 'h',
+			'datatype'	=> 'decimal',
+//			'unit'		=> 'h',
 			'massiveaction'	=> true,
 		];
 		

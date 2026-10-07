@@ -265,8 +265,8 @@ final class TimeTask extends CommonDBTM
 			'table'		=> $table,
 			'field'		=> 'hours',
 			'name'		=> __('Hours'),
-			'datatype'	=> 'number',
-			'unit'		=> 'h',
+			'datatype'	=> 'decimal',
+//			'unit'		=> 'h',
 			'massiveaction'	=> true,
 		];
 		

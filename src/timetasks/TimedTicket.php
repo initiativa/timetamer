@@ -230,8 +230,8 @@ final class TimedTicket extends CommonDBTM
 			'linkfield'	=> Contract::getForeignKeyField(),
 			'field'		=> 'num',
 			'name'		=> __('Contract\'s time budget'),
-			'datatype'	=> 'number',
-			'unit'		=> 'h',
+			'datatype'	=> 'decimal',
+//			'unit'		=> 'h',
 			'massiveaction'	=> true,
 		];
 		
@@ -248,8 +248,8 @@ final class TimedTicket extends CommonDBTM
 					taskv.`$t_fc` = TABLE.`id`
 			)",
 			'name'		=> __('Total hours'),
-			'datatype'	=> 'number',
-			'unit'		=> 'h',
+			'datatype'	=> 'decimal',
+//			'unit'		=> 'h',
 			'massiveaction'	=> true,
 		];
 		
